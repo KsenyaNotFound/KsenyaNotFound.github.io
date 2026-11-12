@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" shape-rendering="crispEdges">
+  <defs>
+    <path id="paw" d="M4 8h4v6H4zM10 2h4v7h-4zM18 2h4v7h-4zM24 8h4v6h-4zM10 14h12v4h4v10h-8v-2h-4v2H6V18h4z"/>
+  </defs>
+  <use href="#paw" transform="translate(18 450) rotate(-20 16 16)"/>
+  <use href="#paw" transform="translate(62 426) rotate(8 16 16)"/>
+  <use href="#paw" transform="translate(38 365) rotate(-12 16 16)"/>
+  <use href="#paw" transform="translate(88 345) rotate(20 16 16)"/>
+  <use href="#paw" transform="translate(70 278) rotate(-30 16 16)"/>
+  <use href="#paw" transform="translate(118 257) rotate(-8 16 16)"/>
+  <use href="#paw" transform="translate(130 190) rotate(18 16 16)"/>
+  <use href="#paw" transform="translate(182 176) rotate(35 16 16)"/>
+  <use href="#paw" transform="translate(212 109) rotate(25 16 16)"/>
+  <use href="#paw" transform="translate(260 122) rotate(55 16 16)"/>
+  <use href="#paw" transform="translate(298 63) rotate(12 16 16)"/>
+  <use href="#paw" transform="translate(347 79) rotate(32 16 16)"/>
+  <use href="#paw" transform="translate(315 349) rotate(-145 16 16)"/>
+  <use href="#paw" transform="translate(355 388) rotate(-165 16 16)"/>
+  <use href="#paw" transform="translate(285 423) rotate(-130 16 16)"/>
+  <use href="#paw" transform="translate(324 465) rotate(-155 16 16)"/>
+</svg>

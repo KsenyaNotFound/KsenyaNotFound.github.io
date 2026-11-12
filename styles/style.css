@@ -167,6 +167,7 @@ a:focus-visible, button:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
   gap: 10px;
   min-height: 40px;
   max-width: calc(100% - 32px);
@@ -175,8 +176,10 @@ a:focus-visible, button:focus-visible {
   color: #f0e9f7;
   background: transparent;
   text-shadow: 0 1px 5px #141021cc, 0 0 12px #c4a0ff40;
+  font-family: var(--display-font);
   font-size: clamp(14px, 1vw, 16px);
   font-weight: bold;
+  -webkit-text-stroke: 0.35px currentColor;
   transform: translateY(8px);
   transition: transform 0.35s ease;
 }
@@ -344,6 +347,42 @@ a:focus-visible, button:focus-visible {
   line-height: 1.5;
 }
 
+/* Paired cat cards: colors also tint the decorative paw pattern. */
+.cat-card-light {
+  --card-background: #fff;
+  --card-ink: #c73c73;
+}
+
+.cat-card-pink {
+  --card-background: #c73c73;
+  --card-ink: #fff;
+}
+
+.cat-card-light .back,
+.cat-card-pink .back {
+  position: relative;
+  isolation: isolate;
+  color: var(--card-ink);
+  background: var(--card-background);
+}
+
+.cat-card-light .back::before,
+.cat-card-pink .back::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: currentColor;
+  -webkit-mask: url("../image/paw-trail-pixel.svg") center / 100% 100% no-repeat;
+  mask: url("../image/paw-trail-pixel.svg") center / 100% 100% no-repeat;
+  opacity: 0.16;
+}
+/* Mirror the irregular trail so each cat has its own route across the card. */
+.cat-card-pink .back::before { transform: scaleX(-1); }
+
+.cat-card-light .front img,
+.cat-card-pink .front img { image-rendering: pixelated; }
 .flip-container.is-flipped .flipper { transform: rotateY(180deg); }
 
 .icons {
