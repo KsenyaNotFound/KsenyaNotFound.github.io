@@ -1,49 +1,39 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Переворачивающийся блок</title>
-    <style>
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Написать мне</title>
+  <script src="contact.js" defer></script>
 </head>
 <body>
-    <a href="mailto:ваш_email@example.com?subject=Тема&body=Привет!">
-        <button>Написать мне</button>
-    </a>    
-    <form action="sendmail.php" method="post">
-        <label>Ваше имя:</label>
-        <input type="text" name="username" required><br><br>
-        <label>Ваш email:</label>
-        <input type="email" name="useremail" required><br><br>
-        <label>Сообщение:</label>
-        <textarea name="message" required></textarea><br><br>
-        <input type="submit" value="Отправить">
+  <main>
+    <h1>Написать мне</h1>
+    <a href="mailto:kellisparkl@yandex.ru">Написать по электронной почте</a>
+    <p>Форма откроет почтовое приложение с подготовленным сообщением.</p>
+    <form class="contact-form">
+      <p><label for="username">Ваше имя:</label>
+        <input id="username" type="text" name="username" autocomplete="name" required></p>
+      <p><label for="useremail">Ваш email:</label>
+        <input id="useremail" type="email" name="useremail" autocomplete="email" required></p>
+      <p><label for="message">Сообщение:</label>
+        <textarea id="message" name="message" required></textarea></p>
+      <button type="submit">Отправить</button>
     </form>
-    <button id="openForm">Написать мне</button>
-    <div id="popup" style="display:none;">
-        <form id="mailForm">
-            <label>Ваше имя:</label>
-            <input type="text" name="username" required><br><br>
-            <label>Ваш email:</label>
-            <input type="email" name="useremail" required><br><br>
-            <label>Сообщение:</label>
-            <textarea name="message" required></textarea><br><br>
-            <input type="submit" value="Отправить">
-        </form>
-    </div>
-    <script>
-        document.getElementById('openForm').addEventListener('click', function() {
-            document.getElementById('popup').style.display = 'block';
-        });
-        
-        document.getElementById('mailForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Для отправки через PHP, вам нужно отправить запрос на сервер
-            // Для mailto:
-            var mailtoLink = "kellisparkl@yandex.ru?subject=Сообщение&body=" + encodeURIComponent("Имя: " + document.getElementsByName('username')[0].value + "\nEmail: " + document.getElementsByName('useremail')[0].value + "\nСообщение: " + document.getElementsByName('message')[0].value);
-            window.location.href = mailtoLink;
-        });    
-    </script>
+    <p><button id="openForm" type="button">Открыть форму в окне</button></p>
+    <dialog id="popup" aria-labelledby="popup-title">
+      <h2 id="popup-title">Написать мне</h2>
+      <form class="contact-form" id="mailForm">
+        <p><label for="popup-name">Ваше имя:</label>
+          <input id="popup-name" type="text" name="username" autocomplete="name" required></p>
+        <p><label for="popup-email">Ваш email:</label>
+          <input id="popup-email" type="email" name="useremail" autocomplete="email" required></p>
+        <p><label for="popup-message">Сообщение:</label>
+          <textarea id="popup-message" name="message" required></textarea></p>
+        <button type="submit">Отправить</button>
+      </form>
+      <form method="dialog"><button type="submit">Закрыть</button></form>
+    </dialog>
+  </main>
 </body>
 </html>

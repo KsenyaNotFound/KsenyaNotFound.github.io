@@ -1,16 +1,29 @@
-document.addEventListener('DOMContentLoaded', function() {
-  const blocks = document.querySelectorAll('.block');
+"use strict";
 
-  blocks.forEach(block => {
-    const header = block.querySelector('.header');
-    const content = block.querySelector('.content');
+// Optional accordion behavior for blocks containing a header and content.
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".block").forEach((block) => {
+    const header = block.querySelector(".header");
+    const content = block.querySelector(".content");
+    if (!header || !content) return;
 
-    header.addEventListener('mouseover', () => {
-      content.style.maxHeight = '500px'; // Установите максимальную высоту, которая вам нужна
+    function expand() {
+      content.style.maxHeight = content.scrollHeight + "px";
+    }
+
+    function collapse() {
+      content.style.maxHeight = "0";
+    }
+
+    header.addEventListener("mouseenter", expand);
+    block.addEventListener("mouseleave", collapse);
+    header.addEventListener("focusin", expand);
+    block.addEventListener("focusout", (event) => {
+      if (!block.contains(event.relatedTarget)) collapse();
     });
-
-    header.addEventListener('mouseout', () => {
-      content.style.maxHeight = '0';
+    header.addEventListener("click", () => {
+      if (content.style.maxHeight && content.style.maxHeight !== "0px") collapse();
+      else expand();
     });
   });
 });
