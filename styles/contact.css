@@ -1,0 +1,43 @@
+/* Contact page and popup share the same fluid form layout. */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: clamp(16px, 4vw, 48px);
+  font: 1rem / 1.5 Arial, sans-serif;
+  color: #333;
+  background: #fff5f9;
+  overflow-wrap: anywhere;
+}
+main { width: min(100%, 640px); margin-inline: auto; }
+h1 { font-size: clamp(24px, 5vw, 36px); }
+label { display: block; margin-bottom: 6px; }
+input, textarea, button { max-width: 100%; font: inherit; }
+input, textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #9e657b;
+  border-radius: 8px;
+}
+textarea { min-height: 140px; resize: vertical; }
+button {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid #9e657b;
+  border-radius: 8px;
+  background: #ffd5e5;
+  cursor: pointer;
+}
+a { color: #92345a; }
+dialog {
+  width: min(640px, calc(100% - 24px));
+  max-width: calc(100% - 24px);
+  max-height: 90vh;
+  max-height: 90svh;
+  padding: clamp(16px, 4vw, 32px);
+  overflow-y: auto;
+  border: 0;
+  border-radius: 16px;
+}
+dialog::backdrop { background: #0008; }
+:focus-visible { outline: 3px solid #92345a; outline-offset: 3px; }
