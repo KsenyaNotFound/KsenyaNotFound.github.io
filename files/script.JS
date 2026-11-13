@@ -99,6 +99,115 @@
   let phase = 0;
   let frameId = null;
   let previousTime = null;
+  let cursorTrail = null;
+
+  function trailColorAt(x, y) {
+    const target = document.elementFromPoint(x, y);
+    const page = target?.closest(".page");
+    let color = page?.classList.contains("about") ? [235, 90, 148] : [255, 255, 255];
+    const surface = surfaces.find(({ canvas }) => canvas.parentElement === page);
+    if (surface) {
+      const bounds = surface.canvas.getBoundingClientRect();
+      const localX = x - bounds.left;
+      const localY = y - bounds.top;
+      const amplitude = Math.abs(surface.width / 2 - localX) / (surface.width / 2) * 50;
+      const edge = surface.height / 2 + Math.sin(localX * settings.frequency + phase) * amplitude;
+      const canvasY = surface.mirrored ? surface.height - localY : localY;
+      if (canvasY >= edge) {
+        color = canvasY >= edge + Math.max(1, Math.abs(Math.sin(phase)) * 5)
+          ? [235, 90, 148] : [255, 213, 229];
+      }
+    }
+
+    // Composite panel and card backgrounds over the animated wave.
+    const layers = [];
+    for (let element = target; element && element !== page; element = element.parentElement) {
+      layers.push(element);
+    }
+    for (const element of layers.reverse()) {
+      const channels = getComputedStyle(element).backgroundColor.match(/[\d.]+/g)?.map(Number);
+      if (!channels || channels.length < 3) continue;
+      const alpha = channels[3] ?? 1;
+      color = color.map((channel, i) => channels[i] * alpha + channel * (1 - alpha));
+    }
+    const isPink = color[0] - color[1] > 25 && color[0] - color[2] > 12;
+    return isPink ? [255, 255, 255] : [235, 90, 148];
+  }
+
+  function initializeCursorTrail() {
+    if (!window.matchMedia("(any-pointer: fine)").matches) return;
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    canvas.className = "cursor-trail";
+    canvas.setAttribute("aria-hidden", "true");
+    document.body.append(canvas);
+    cursorTrail = { canvas, context, points: [], pending: null };
+
+    function resize() {
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(window.innerWidth * ratio);
+      canvas.height = Math.round(window.innerHeight * ratio);
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      clearCursorTrail();
+    }
+
+    window.addEventListener("pointermove", (event) => {
+      if (event.pointerType !== "mouse" || motionPreference.matches || document.hidden) return;
+      cursorTrail.pending = { x: event.clientX, y: event.clientY };
+    }, { passive: true });
+    window.addEventListener("resize", resize, { passive: true });
+    window.addEventListener("scroll", clearCursorTrail, { passive: true });
+    window.addEventListener("blur", clearCursorTrail);
+    document.documentElement.addEventListener("pointerleave", clearCursorTrail);
+    resize();
+  }
+
+  function clearCursorTrail() {
+    if (!cursorTrail) return;
+    cursorTrail.points.length = 0;
+    cursorTrail.pending = null;
+    cursorTrail.context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+  }
+
+  function drawCursorTrail(elapsed) {
+    if (!cursorTrail) return;
+    const { context, points, pending } = cursorTrail;
+    const lifetime = 420;
+    for (let i = points.length - 1; i >= 0; i--) {
+      points[i].age += elapsed;
+      if (points[i].age >= lifetime) points.splice(i, 1);
+    }
+    if (pending) {
+      const last = points[points.length - 1];
+      if (!last || Math.hypot(pending.x - last.x, pending.y - last.y) >= 2) {
+        points.push({ ...pending, age: 0, color: trailColorAt(pending.x, pending.y) });
+        if (points.length > 48) points.shift();
+      }
+      cursorTrail.pending = null;
+    }
+    context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    context.lineCap = "round";
+    context.lineJoin = "round";
+    context.shadowBlur = 5;
+    for (let i = 1; i < points.length; i++) {
+      const previous = points[i - 1];
+      const point = points[i];
+      const fade = 1 - point.age / lifetime;
+      const gradient = context.createLinearGradient(previous.x, previous.y, point.x, point.y);
+      gradient.addColorStop(0, "rgb(" + previous.color.join(",") + ")");
+      gradient.addColorStop(1, "rgb(" + point.color.join(",") + ")");
+      context.globalAlpha = fade * 0.65;
+      context.lineWidth = 3 * fade;
+      context.strokeStyle = gradient;
+      context.shadowColor = "rgb(" + point.color.join(",") + ")";
+      context.beginPath();
+      context.moveTo(previous.x, previous.y);
+      context.lineTo(point.x, point.y);
+      context.stroke();
+    }
+    context.globalAlpha = 1;
+  }
 
   function resizeSurfaces() {
     const ratio = Math.min(window.devicePixelRatio || 1, 2);
@@ -169,6 +278,7 @@
       }
     }
     render();
+    drawCursorTrail(elapsed);
     frameId = requestAnimationFrame(animate);
   }
 
@@ -180,6 +290,7 @@
     if (!document.hidden && !motionPreference.matches) {
       frameId = requestAnimationFrame(animate);
     } else {
+      clearCursorTrail();
       stars.length = 0;
       nextBurstIn = randomBurstDelay();
       render();
@@ -187,6 +298,7 @@
   }
 
   if (surfaces.length) {
+    initializeCursorTrail();
     const resizeObserver = new ResizeObserver(resizeSurfaces);
     surfaces.forEach(({ canvas }) => resizeObserver.observe(canvas));
     window.addEventListener("resize", resizeSurfaces, { passive: true });
